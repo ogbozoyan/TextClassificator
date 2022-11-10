@@ -1,7 +1,13 @@
 //https://www.tutorialspoint.com/tika/tika_content_extraction.htm
 package com.ogi.ogi;
 import java.io.IOException;
-
+/*
+curl -i \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-X POST --data \
+  '{"id": 1,"size": 10,"text": "Jopa"}' "http://localhost:8080/try"
+ */
 
 import org.apache.tika.exception.TikaException;
 import org.json.JSONObject;
@@ -15,9 +21,9 @@ import com.ogi.ogi.controllers.fileController;
 
 public class OgiApplication {
 	public static void main(String[] args) throws IOException, TikaException {
-		fileController desk = new fileController("test.txt");
-		JSONObject jsn = desk.createJson();
-		System.out.println(jsn);
+		//fileController desk = new fileController("test.txt");
+		//JSONObject jsn = desk.createJson();
+		//System.out.println(jsn);
 		SpringApplication.run(OgiApplication.class, args);
 	}
 }
