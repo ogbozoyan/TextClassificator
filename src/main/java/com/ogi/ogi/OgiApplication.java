@@ -21,7 +21,6 @@ import com.ogi.ogi.controllers.fileController;
 
 public class OgiApplication {
 	public static void main(String[] args) throws IOException, TikaException {
-
 		SpringApplication.run(OgiApplication.class, args);
 	}
 }

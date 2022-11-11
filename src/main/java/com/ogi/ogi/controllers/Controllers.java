@@ -5,20 +5,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
@@ -30,7 +24,7 @@ public class Controllers {
     long id_t;
     @RequestMapping(value="/save", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public void JSDataConsumer(@RequestBody String JSString) throws ParseException {
+    public void JSDataConsumer(@RequestBody String JSString){
         JSONParser parser = new JSONParser();
         try {
             Object jsp = parser.parse(JSString);
@@ -45,13 +39,12 @@ public class Controllers {
         }
     }
     @GetMapping("/classify/file")
-    public String classifyFile(@RequestParam(value = "file", defaultValue = "test.txt") String name) throws IOException, InterruptedException {
+    public String classifyFile(@RequestParam(value = "name", defaultValue = "test.txt") String name) throws IOException, InterruptedException {
         try {
             fileController desk = new fileController(name);
             HashMap<String, String> jsn1 = desk.createJson();
             var objectMapper = new ObjectMapper();
-            String requestBody = objectMapper
-                    .writeValueAsString(jsn1);
+            String requestBody = objectMapper.writeValueAsString(jsn1);
             StringEntity params = new StringEntity(requestBody);
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost("http://127.0.0.1:5000/");
@@ -62,11 +55,12 @@ public class Controllers {
             System.out.println(json);
             return String.format(json);
         }catch (Exception e){
+
             return String.format("Error %s", e);
         }
     }
     @GetMapping("/classify/text")
-    public String classifyText(@RequestParam(value = "text", defaultValue = " ") String text) throws IOException, InterruptedException {
+    public String classifyText(@RequestParam(value = "text", defaultValue = "") String text) throws IOException, InterruptedException {
         try {
             this.id_t = Counter.Id;
             HashMap<String, String> jsn1 = new HashMap<>();
@@ -75,8 +69,7 @@ public class Controllers {
             jsn1.put("id", String.valueOf(id_t));
             Counter.Id++;
             var objectMapper = new ObjectMapper();
-            String requestBody = objectMapper
-                    .writeValueAsString(jsn1);
+            String requestBody = objectMapper.writeValueAsString(jsn1);
             StringEntity params = new StringEntity(requestBody);
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost("http://127.0.0.1:5000/");
@@ -94,16 +87,11 @@ public class Controllers {
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
         return String.format("Hello %s!", name);
     }
-    @GetMapping("/files")
+    @GetMapping("/")
     public Set<String> listFilesUsingJavaIO() {
         return Stream.of(Objects.requireNonNull(new File("files/").listFiles()))
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .collect(Collectors.toSet());
-    }
-    @GetMapping("/")
-    public String greeting(Model model) {
-        model.addAttribute("title","Main page");
-        return "home";
     }
 }

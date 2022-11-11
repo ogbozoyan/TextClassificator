@@ -17,6 +17,12 @@ def main():
         }
 
     print(request_data)
+    if request_data.get('text') == '':
+        return{
+            "ok":False,
+            "id":request_data.get(id),
+            "result":"Empty file"
+        }
     text = request_data.get('text')
     querry_id = request_data.get('id')
 
