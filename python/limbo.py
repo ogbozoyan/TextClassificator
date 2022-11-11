@@ -6,24 +6,25 @@ model = PrepareModel('finalized_model.sav')
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['POST'])
 def main():
     try:
         request_data = request.get_json()
     except:
         return {
             'ok': False,
-            'result': '400 Bad Request',
+            'result': '400 Bad Request'
         }
 
-    # print(request_data)
-    querry_id = request_data.get('id')
+    print(request_data)
     text = request_data.get('text')
+    querry_id = request_data.get('id')
+
 
     if querry_id is None or text is None:
         return {
             'ok': False,
-            'result': '400 Bad Request',
+            'result': '400 Bad Request'
         }
 
     try:
@@ -31,16 +32,13 @@ def main():
     except:
         return {
             'ok': False,
-            'result': '500 Internal Error',
+            'result': '500 Internal Error'
         }
 
-    return {
-        'id': querry_id,
-        'result': predict,
-    }
+    return {'id': querry_id,'result': predict}
 
 
-app.run(debug=True)
+app.run(host = '127.0.0.1',port = 5000,debug=True)
 
 # TODO: add queue for requests
 
