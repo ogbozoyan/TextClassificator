@@ -21,9 +21,7 @@ import com.ogi.ogi.controllers.fileController;
 
 public class OgiApplication {
 	public static void main(String[] args) throws IOException, TikaException {
-		//fileController desk = new fileController("test.txt");
-		//JSONObject jsn = desk.createJson();
-		//System.out.println(jsn);
+
 		SpringApplication.run(OgiApplication.class, args);
 	}
 }

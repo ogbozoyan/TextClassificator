@@ -27,7 +27,7 @@ get:
 }
  */
 
-@Controller
+@RestController
 public class Controllers {
     @RequestMapping(value="/try", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
@@ -45,9 +45,16 @@ public class Controllers {
             System.out.printf("%s %s \n",e,new Throwable().getStackTrace()[1].getLineNumber());
         }
     }
+    @GetMapping("/classify")
+    public String classify(@RequestParam(value = "name", defaultValue = "test.txt") String name) {
+        fileController desk = new fileController(name);
+        org.json.JSONObject jsn = desk.createJson();
+        System.out.println(jsn);
+        return String.format("|%s| sent to classifier", jsn);
+    }
+
     @GetMapping("/example")
     public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-
         return String.format("Hello %s!", name);
     }
     @GetMapping("/files")
