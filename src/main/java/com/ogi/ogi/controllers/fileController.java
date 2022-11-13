@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
@@ -19,13 +20,9 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 
-class Counter {
-    public static long Id = 1;
-}
-
 public class fileController {
     public long id;
-    protected JSONObject json;
+    protected HashMap json;
     protected String std_name;
     public String base64;
     public Parser parser;
@@ -38,14 +35,15 @@ public class fileController {
     public  PDFParser pdfparser;
     private  Tika tika;
 
-    public JSONObject createJson(){
+    public HashMap createJson(){
         try{
-            this.json =  new JSONObject();
-            this.json.put("id", this.id);
-            this.json.put("size", this.handler.toString().length());
+            this.json =  new HashMap<String, String>();
+            this.json.put("id", String.valueOf(this.id));
+            this.json.put("size", String.valueOf(this.handler.toString().length()));
             this.json.put("text", this.handler.toString());
             return this.json;
         }catch (Exception e){
+            System.out.println(e);
             System.out.printf("%s %s \n",e,new Throwable().getStackTrace()[1].getLineNumber());
             return null;
         }
