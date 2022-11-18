@@ -1,0 +1,18 @@
+html {
+  box-sizing: border-box;
+  font-family: Roboto;
+  background-color: #e0e0e0;
+  
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+#root, .body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
