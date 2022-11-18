@@ -1,0 +1,20 @@
+.button {
+    border: 6px dashed #e5f6ea;
+    padding: 15px 15px;
+    cursor: pointer;
+    flex-grow: 1;
+    text-align: center;
+}
+
+input::file-selector-button {
+    font-weight: bold;
+    background-color: #e5f6ea;
+    color: #3b5045;
+    padding: 0.5em;
+    border: thin solid grey;
+    border-radius: 3px;
+}
+
+.btnWrapper {
+    display: flex;
+}
