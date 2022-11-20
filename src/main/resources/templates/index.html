@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Classifier</title>
+  </head>
+  <body>
+
+    <div>
+        <input id="input" type="file" />
+        <button id="upload" onclick="uploadFile">upload</button>
+    </div>
+    <div id="result"></div>
+
+
+    <script>
+        let input = document.getElementById('input');
+        input.addEventListener("change", handleFiles, false);
+
+        let upload = document.getElementById('upload');
+        upload.addEventListener("click", uploadFile, false);
+
+        let files;
+
+        function handleFiles() {
+            files = this.files;
+        }
+
+        function uploadFile() {
+            const formData = new FormData();
+            let result = document.getElementById('result');
+            
+            formData.append('file', files[0]);
+            
+            fetch('http://localhost:8080/upload/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then((response) => response.json())
+            .then((res) => {
+                result.innerText = JSON.stringify(res);
+            })
+            .catch((error) => {
+                result.innerText = error;
+            });
+        }
+        
+    </script>
+  </body>
+</html>

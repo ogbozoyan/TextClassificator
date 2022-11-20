@@ -1,13 +1,11 @@
 package com.ogi.ogi.controllers;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.language.LanguageIdentifier;
 import org.apache.tika.parser.pdf.PDFParser;
-import org.json.JSONObject;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +19,6 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 
 public class fileController {
-    public long id;
     protected HashMap json;
     protected String std_name;
     public String base64;
@@ -38,7 +35,6 @@ public class fileController {
     public HashMap createJson(){
         try{
             this.json =  new HashMap<String, String>();
-            this.json.put("id", String.valueOf(this.id));
             this.json.put("size", String.valueOf(this.handler.toString().length()));
             this.json.put("text", this.handler.toString());
             return this.json;
@@ -49,8 +45,6 @@ public class fileController {
         }
     }
     public fileController(){
-        this.id = Counter.Id;
-        Counter.Id++;
         this.std_name = "test.txt";
         this.parser = new AutoDetectParser();
         this.handler = new BodyContentHandler();
@@ -69,8 +63,6 @@ public class fileController {
         }
     }
     public fileController(String name){
-        this.id = Counter.Id;
-        Counter.Id++;
         this.std_name = name;
         this.parser = new AutoDetectParser();
         this.handler = new BodyContentHandler();
