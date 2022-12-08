@@ -1,28 +1,30 @@
 import React from "react";
-import styles from "./FileMeta.module.css";
+import styles from "./FileMeta.module.scss";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
-function FileMeta({ file }) {
+function FileMeta() {
+  const payload = useSelector((state) => state.payload);
+
   return (
     <>
-      <div>
-        <p className={styles.text}>
-          <b>file meta</b>
-        </p>
-        <p className={styles.text}>
-          <b>name:</b>
-          <br />
-          {file.name}
-        </p>
-        <p className={styles.text}>
-          <b>size:</b>
-          <br />
-          {file.size}
-        </p>
-        <p className={styles.text}>
-          <b>type:</b>
-          <br />
-          {file.type}
-        </p>
+      <div className={styles.container}>
+        <div className={styles.container__fields}>
+          <p className={styles.container__text}>
+            <b>name:</b>
+          </p>
+          <p className={styles.container__text}>
+            <b>size:</b>
+          </p>
+          <p className={styles.container__text}>
+            <b>type:</b>
+          </p>
+        </div>
+        <div className={styles.container__values}>
+          <p className={styles.container__text}>{payload.name}</p>
+          <p className={styles.container__text}>{payload.size}</p>
+          <p className={styles.container__text}>{payload.type}</p>
+        </div>
       </div>
     </>
   );
