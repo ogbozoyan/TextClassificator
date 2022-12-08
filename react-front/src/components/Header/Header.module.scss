@@ -1,0 +1,35 @@
+.button {
+  display: flex;
+  &:hover {
+    background-color: #b1e2bf;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+
+  &__btn {
+    outline: none;
+    text-decoration: none;
+    color: #3b5045;
+    font-weight: bold;
+    background-color: #e5f6ea;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    height: 70px;
+  }
+
+  &__btn_l {
+    border-radius: 10px 0 0 0;
+  }
+
+  &__btn_r {
+    border-radius: 0 10px 0 0;
+  }
+
+  &__btn_active {
+    background-color: #b1e2bf;
+  }
+}

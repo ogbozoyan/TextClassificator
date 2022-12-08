@@ -1,9 +1,9 @@
 import React from "react";
-import styles from "./UploadButton.module.css";
+import styles from "./UploadButton.module.scss";
 
-function UploadButton({ uploadFile }) {
+function UploadButton({ uploadData }) {
   return (
-    <button className={styles.button} type="submit" onClick={uploadFile}>
+    <button className={styles.button} type="submit" onClick={uploadData}>
       Upload
     </button>
   );

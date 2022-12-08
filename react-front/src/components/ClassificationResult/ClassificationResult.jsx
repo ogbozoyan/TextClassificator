@@ -1,7 +1,9 @@
 import React from "react";
-import styles from "./ClassificationResult.module.css";
+import styles from "./ClassificationResult.module.scss";
+import { useSelector } from "react-redux";
 
-function ClassificationResult({ result }) {
+function ClassificationResult() {
+  const result = useSelector((state) => state.result);
   return (
     <>
       <div>
