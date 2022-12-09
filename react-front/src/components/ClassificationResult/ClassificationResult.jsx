@@ -6,13 +6,15 @@ function ClassificationResult() {
   const result = useSelector((state) => state.result);
   return (
     <>
-      <div>
-        <p className={styles.text}>
-          <b>result:</b>
-          <br />
-          {result}
-        </p>
-      </div>
+      {result !== "" && (
+        <div>
+          <p className={styles.text}>
+            <b>result:</b>
+            <br />
+            {result}
+          </p>
+        </div>
+      )}
     </>
   );
 }
