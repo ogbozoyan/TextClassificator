@@ -1,5 +1,4 @@
 import styles from "./App.module.css";
-import { useState } from "react";
 import { Header } from "./components/Header";
 import { ClassificationResult } from "./components/ClassificationResult";
 import { FileMeta } from "./components/FileMeta";
@@ -15,7 +14,6 @@ function App() {
   const key = useSelector((state) => state.key);
   const type = useSelector((state) => state.type);
   const result = useSelector((state) => state.result);
-  const error = useSelector((state) => state.error);
 
   function uploadData(event) {
     event.preventDefault();
@@ -25,8 +23,11 @@ function App() {
     data.append("payload", payload);
     console.log(data);
 
-    fetch("http://172.20.10.7:8080/upload/", {
+    fetch("http://127.0.0.1:8080/upload/", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: data,
     })
       .then((response) => {
@@ -82,7 +83,7 @@ function App() {
                 <Action onData={onData} />
                 <UploadButton uploadData={uploadData} />
                 {result !== "" && <ClassificationResult />}
-                {payload && type === "file" && <FileMeta />}
+                {type === "file" && <FileMeta />}
               </>
             }
           />

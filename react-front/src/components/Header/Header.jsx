@@ -1,7 +1,7 @@
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 function Header() {
   const { type } = useParams();
