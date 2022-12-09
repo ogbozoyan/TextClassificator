@@ -24,9 +24,10 @@ function App() {
 
     if (type === "text") {
       data = {
-        key: key,
+
         payload: payload,
       };
+      data = JSON.stringify(data);
       headers = {
         "Content-Type": "application/json",
       };
@@ -34,11 +35,11 @@ function App() {
 
     if (type === "file") {
       data = new FormData();
-      data.append("key", key);
+
       data.append("file", payload);
     }
 
-    fetch("http://127.0.0.1:8080/upload/file/", {
+    fetch(`http://127.0.0.1:8080/upload/${type}/`, {
       method: "POST",
       headers: headers,
       body: data,

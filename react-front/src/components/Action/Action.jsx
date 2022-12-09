@@ -31,7 +31,7 @@ function Action({ onData }) {
           ></textarea>
         </>
       )}
-      <input type="text" onChange={(e) => onData(e, "key")} />
+
     </>
   );
 }

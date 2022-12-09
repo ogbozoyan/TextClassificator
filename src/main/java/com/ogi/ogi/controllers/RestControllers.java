@@ -15,6 +15,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.bouncycastle.x509.NoSuchStoreException;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +41,22 @@ public class RestControllers {
     @Autowired
     private DataRepository dataRepository;
     @CrossOrigin
+    @PostMapping("/token")
+    public ResponseEntity<String> getToken(@RequestBody RequestForm token) throws IOException, ParseException {
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("content-type", "application/json");
+        String s_token = "token";
+        if(token.getToken().equals(s_token)){
+            return ResponseEntity.ok().headers(responseHeaders).body("{\"result\":true}");
+        }
+        else{
+            return ResponseEntity.ok().headers(responseHeaders).body("{\"result\":false}");
+        }
+    }
+    @CrossOrigin
     @PostMapping("/upload/text")
     public ResponseEntity<String> uploadText(@RequestBody String text) throws IOException {
-
         HashMap<String,String> jsn_ans = new HashMap<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         System.out.println(text);

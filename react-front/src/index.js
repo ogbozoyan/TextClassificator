@@ -29,7 +29,7 @@ function dataReduser(state = defaultState, action) {
     case "SET_ERROR":
       return { ...state, result: action.payload };
     case "SET_AUTH":
-      return { ...state, result: action.payload };
+      return { ...state, is_auth: action.payload };
     default:
       return state;
   }

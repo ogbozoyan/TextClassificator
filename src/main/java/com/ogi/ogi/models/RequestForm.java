@@ -5,29 +5,9 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 public class RequestForm {
-    private String key;
-    private String type;
-    private String  payload;
-    private MultipartFile file;
+    private String token;
 
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public boolean getKey() {
-        String token = "token";
-        if (this.key.equals(token)) {
-            return true;
-        }
-        return false;
-
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getPayload() {
-        return payload;
+    public String getToken() {
+        return token;
     }
 }
