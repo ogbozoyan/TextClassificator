@@ -39,74 +39,22 @@ public class RestControllers {
     @Autowired
     private DataRepository dataRepository;
     @CrossOrigin
-    @PostMapping("/upload")
-    public ResponseEntity<HashMap> request(@RequestBody RequestForm requestForm) throws IOException {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("content-type", "application/json");
-        if(!requestForm.getKey()){
-            return ResponseEntity.badRequest().headers(responseHeaders).body(new HashMap<String, String>() {{
-                put("error", "Authentication failed");
-            }});
-        }
-        if(requestForm.getType() == null || requestForm.getPayload() == null){
-            return ResponseEntity.badRequest().headers(responseHeaders).body(new HashMap<String, String>() {{
-                put("error", "Invalid request");
-            }});
-        }
-        else if (requestForm.getType().equals("file")){
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpPost request = new HttpPost("http://127.0.0.1:8080/upload/file");
-            String body = requestForm.getPayload();
-            HttpEntity entityPayload = new ByteArrayEntity(body.getBytes("UTF-8"));
-            request.addHeader("content-type", "text/plain");
-            request.setEntity(entityPayload);
-            HttpResponse response = client.execute(request);
-            String result_from_classifier = EntityUtils.toString(response.getEntity())
-                    .replace("\n", "")
-                    .replace("\r", "")
-                    .replace("\t", "")
-                    .replace(" ", "");
-            HashMap result = new ObjectMapper().readValue(result_from_classifier, HashMap.class);
-            return ResponseEntity.ok().headers(responseHeaders).body(result);
-        }
-        else if (requestForm.getType().equals("text")){
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpPost request = new HttpPost("http://127.0.0.1:8080/upload/text");
-            String body = requestForm.getPayload();
-            HttpEntity entityPayload = new ByteArrayEntity(body.getBytes(StandardCharsets.UTF_8));
-            request.addHeader("content-type", "text/plain");
-            request.setEntity(entityPayload);
-
-            HttpResponse response = client.execute(request);
-
-            String result_from_classifier = EntityUtils.toString(response.getEntity())
-                    .replace("\n", "")
-                    .replace("\r", "")
-                    .replace("\t", "")
-                    .replace(" ", "");
-            HashMap result = new ObjectMapper().readValue(result_from_classifier, HashMap.class);
-
-            return ResponseEntity.ok().headers(responseHeaders).body(result);
-        }
-        return ResponseEntity.badRequest().headers(responseHeaders).body(new HashMap<String, String>() {{
-            put("error", "Invalid request");
-        }});
-    }
     @PostMapping("/upload/text")
     public ResponseEntity<String> uploadText(@RequestBody String text) throws IOException {
+
         HashMap<String,String> jsn_ans = new HashMap<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         System.out.println(text);
         if(text == null || text.isEmpty()) {
-            jsn_ans.put("status", "Error");
-            jsn_ans.put("message", "text is empty");
+            jsn_ans.put("id", "Error");
+            jsn_ans.put("result", "text is empty");
             responseHeaders.set("content-type", "application/json");
             return ResponseEntity
                     .badRequest()
                     .headers(responseHeaders)
-                    .body(jsn_ans.get("status") + " " + jsn_ans.get("message"));
+                    .body(jsn_ans.get("result") + " " + jsn_ans.get("id"));
         } else {
-
+            responseHeaders.set("content-type", "application/json");
             Data n = new Data();
 
             HashMap<String, String> jsnfile = new HashMap<>();
@@ -128,31 +76,32 @@ public class RestControllers {
             String result_from_classifier = EntityUtils.toString(response.getEntity());
             System.out.println(result_from_classifier);
             jsn_ans.put("result",result_from_classifier);
-            responseHeaders.set("content-type", "application/json");
+
             return ResponseEntity.ok()
                     .body(jsn_ans.get("result"));
         }
     }
+    @CrossOrigin
     @PostMapping("/upload/file")
-    public ResponseEntity<HashMap> singleFileUpload(@RequestBody MultipartFile file) {
+    public ResponseEntity<String> singleFileUpload(@RequestBody MultipartFile file) {
+
         HashMap<String,String> jsn_ans = new HashMap<>();
         HttpHeaders responseHeaders = new HttpHeaders();
         if (file.isEmpty()) {
-            jsn_ans.put("status", "Error");
-            jsn_ans.put("message", "Please select a file to upload");
+            jsn_ans.put("id", "Error");
+            jsn_ans.put("result", "text is empty");
             responseHeaders.set("content-type", "application/json");
             return ResponseEntity
                     .badRequest()
                     .headers(responseHeaders)
-                    .body(jsn_ans);
+                    .body(jsn_ans.get("id") + " " + jsn_ans.get("result"));
         } else {
             try {
+                responseHeaders.set("content-type", "application/json");
+
                 byte[] bytes = file.getBytes();
                 Path path = Paths.get(FOLDER + file.getOriginalFilename());
                 Files.write(path, bytes);
-
-                jsn_ans.put("status", "Good");
-                jsn_ans.put("message", "Uploaded");
 
                 Data n = new Data();
                 fileController desk = new fileController(file.getOriginalFilename());
@@ -173,19 +122,28 @@ public class RestControllers {
                 String result_from_classifier = EntityUtils.toString(response.getEntity());
                 System.out.println(result_from_classifier);
                 jsn_ans.put("result",result_from_classifier);
+
                 if (result_from_classifier.isEmpty()) {
-                    jsn_ans.put("status", "Error");
-                    jsn_ans.put("message", "|Classifier internal error|");
+                    jsn_ans.put("id", "Error");
+                    jsn_ans.put("result", "|Classifier internal error|");
+                    return ResponseEntity
+                            .badRequest()
+                            .headers(responseHeaders)
+                            .body(jsn_ans.get("id") + " " + jsn_ans.get("result"));
                 }
-                responseHeaders.set("content-type", "application/json");
-                return ResponseEntity.ok().headers(responseHeaders).body(jsn_ans);
+
+                return ResponseEntity
+                        .ok()
+                        .headers(responseHeaders)
+                        .body(jsn_ans.get("result"));
+
             } catch (IOException e) {
-                jsn_ans.put("status", "Error");
-                jsn_ans.put("message", String.valueOf(e));
+                jsn_ans.put("id", "Error");
+                jsn_ans.put("result", String.valueOf(e));
                 return ResponseEntity
                         .badRequest()
                         .headers(responseHeaders)
-                        .body(jsn_ans);
+                        .body(jsn_ans.get("id") + " " + jsn_ans.get("result"));
             }
         }
     }

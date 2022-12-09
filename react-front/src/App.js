@@ -17,18 +17,19 @@ function App() {
 
   function uploadData(event) {
     event.preventDefault();
-    let data = new FormData();
-    data.append("key", key);
-    data.append("type", type);
-    data.append("payload", payload);
-    console.log(data);
 
-    fetch("http://127.0.0.1:8080/upload/", {
+    if(type == "text"){
+    let data = {
+      key: key,
+      payload: payload,
+      };
+
+    fetch("http://127.0.0.1:8080/upload/text/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: data,
+      body: JSON.stringify(data),
     })
       .then((response) => {
         console.log(response);
@@ -36,10 +37,9 @@ function App() {
       })
       .then((response) => {
         console.log(response);
-        let cl = JSON.parse(response.result);
         dispatch({
           type: "SET_RESULT",
-          payload: `id: ${cl.id} | category: ${cl.result}`,
+          payload: `id: ${response.id} | category: ${response.result}`,
         });
       })
       .catch((err) => {
@@ -48,6 +48,36 @@ function App() {
           payload: `error: ${err}`,
         });
       });
+    }
+    if(type == "file"){
+        alert("file");
+        let data = new FormData();
+            data.append("key", key);
+            data.append("file", payload);
+            console.log(...data);
+
+        fetch("http://127.0.0.1:8080/upload/file/", {
+          method: "POST",
+          body: data,
+        })
+          .then((response) => {
+            console.log(response);
+            return response.json();
+          })
+          .then((response) => {
+            console.log(response);
+            dispatch({
+              type: "SET_RESULT",
+              payload: `id: ${response.id} | category: ${response.result}`,
+            });
+          })
+          .catch((err) => {
+            dispatch({
+              type: "SET_ERROR",
+              payload: `error: ${err}`,
+            });
+          });
+        }
   }
 
   function onData(event, type) {
