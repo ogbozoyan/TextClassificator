@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router-dom";
 import styles from "./Action.module.scss";
 import { useSelector } from "react-redux";
 
@@ -14,7 +13,7 @@ function Action({ onData }) {
             type="file"
             id="file"
             onChange={(e) => onData(e, type)}
-            accept="image/*"
+            accept="*"
           />
           <div className={styles.addDocumentBtn}>
             <label className={styles.button} htmlFor="file">
