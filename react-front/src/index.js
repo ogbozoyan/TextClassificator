@@ -13,6 +13,7 @@ let defaultState = {
   payload: 0,
   result: "",
   error: "",
+  is_auth: false,
 };
 
 function dataReduser(state = defaultState, action) {
@@ -26,6 +27,8 @@ function dataReduser(state = defaultState, action) {
     case "SET_RESULT":
       return { ...state, result: action.payload };
     case "SET_ERROR":
+      return { ...state, result: action.payload };
+    case "SET_AUTH":
       return { ...state, result: action.payload };
     default:
       return state;
