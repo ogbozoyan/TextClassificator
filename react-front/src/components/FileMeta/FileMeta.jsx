@@ -7,7 +7,7 @@ function FileMeta() {
 
   return (
     <>
-      {payload && (
+      {payload !== 0 && (
         <div className={styles.container}>
           <div className={styles.container__fields}>
             <p className={styles.container__text}>

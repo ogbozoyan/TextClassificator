@@ -5,7 +5,7 @@ function BrowseButton({ onFile }) {
   return (
     <>
       <div className={styles.btnWrapper}>
-        <input className={styles.button} type="file" onChange={onFile} />
+        <input className={styles.button} type="file" onChange={onFile} required accept="*"/>
       </div>
     </>
   );

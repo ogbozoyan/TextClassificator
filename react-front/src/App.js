@@ -16,6 +16,7 @@ function App() {
   const type = useSelector((state) => state.type);
   const result = useSelector((state) => state.result);
   const is_auth = useSelector((state) => state.is_auth);
+  const token = useSelector((state) => state.token);
 
   function uploadData(event) {
     event.preventDefault();
@@ -39,7 +40,7 @@ function App() {
       data.append("file", payload);
     }
 
-    fetch(`http://127.0.0.1:8080/upload/${type}/`, {
+    fetch(`http://127.0.0.1:8080/${token}/upload/${type}/`, {
       method: "POST",
       headers: headers,
       body: data,
@@ -99,6 +100,7 @@ function App() {
                     <UploadButton uploadData={uploadData} />
                     {result !== "" && <ClassificationResult />}
                     {type === "file" && <FileMeta />}
+                    <span>Current Token: {token}</span>
                   </>
                 ) : (
                   <>

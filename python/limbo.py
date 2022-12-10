@@ -9,6 +9,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def main():
     try:
+        print(request.data)
         request_data = request.get_json()
     except:
         return {

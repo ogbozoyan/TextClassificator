@@ -47,7 +47,7 @@ public class fileController {
     public fileController(){
         this.std_name = "test.txt";
         this.parser = new AutoDetectParser();
-        this.handler = new BodyContentHandler();
+        this.handler = new BodyContentHandler(-1);
         this.metadata = new Metadata();
         this.context = new ParseContext();
         try{
@@ -65,7 +65,7 @@ public class fileController {
     public fileController(String name){
         this.std_name = name;
         this.parser = new AutoDetectParser();
-        this.handler = new BodyContentHandler();
+        this.handler = new BodyContentHandler(-1);
         this.metadata = new Metadata();
         this.context = new ParseContext();
         try {

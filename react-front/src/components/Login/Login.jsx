@@ -9,32 +9,14 @@ function Login() {
 
   function auth(e) {
     e.preventDefault();
-    fetch("http://127.0.0.1:8080/token/", {
-      method: "POST",
-      headers : {
-              "Content-Type": "application/json",
-            },
-      body: JSON.stringify({ token: token }),
-    })
-      .then((response) => {
-
-        return response.json();
-      })
-      .then((response) => {
-        console.log(response);
-        if(response.result){
-        dispatch({
+    dispatch({
           type: "SET_AUTH",
           payload: true,
-        });
-        } else {
-          alert("Wrong token");
-        }
-      }
-    )
-      .catch((err) => {
-        console.log("auth error:", err);
-      });
+    });
+    dispatch({
+           type: "SET_TOKEN",
+           payload: token,
+    });
   }
 
   return (
