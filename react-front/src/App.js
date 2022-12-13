@@ -1,97 +1,116 @@
-import styles from "./App.module.css";
-import { Header } from "./components/Header";
-import { ClassificationResult } from "./components/ClassificationResult";
-import { FileMeta } from "./components/FileMeta";
-import { Action } from "./components/Action";
-import { UploadButton } from "./components/UploadButton";
+import Index from "./pages/Index";
+import TextClassificator from "./pages/TextClassificator";
+import FileClassificator from "./pages/FileClassificator";
 
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
+import {
+  UserOutlined,
+  FileDoneOutlined,
+  InfoOutlined,
+  GithubOutlined,
+} from "@ant-design/icons";
+import { Layout, Menu } from "antd";
+import { connect } from "react-redux";
 
-function App() {
-  const dispatch = useDispatch();
-  const payload = useSelector((state) => state.payload);
-  const key = useSelector((state) => state.key);
-  const type = useSelector((state) => state.type);
-  const result = useSelector((state) => state.result);
+const { Header, Sider, Content } = Layout;
 
-  function uploadData(event) {
-    event.preventDefault();
-    let data = new FormData();
-    data.append("key", key);
-    data.append("type", type);
-    data.append("payload", payload);
-    console.log(data);
-
-    fetch("http://127.0.0.1:8080/upload/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: data,
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((response) => {
-        console.log(response);
-        let cl = JSON.parse(response.result);
-        dispatch({
-          type: "SET_RESULT",
-          payload: `id: ${cl.id} | category: ${cl.result}`,
-        });
-      })
-      .catch((err) => {
-        dispatch({
-          type: "SET_ERROR",
-          payload: `error: ${err}`,
-        });
-      });
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.colorBgContainer = "#d9d9d9";
+    this.state = {
+      collapsed: false,
+    };
   }
 
-  function onData(event, type) {
-    if (type === "file") {
-      dispatch({
-        type: "SET_PAYLOAD",
-        payload: event.target.files[0],
-      });
-      return;
-    } else if (type === "text") {
-      dispatch({
-        type: "SET_PAYLOAD",
-        payload: event.target.value,
-      });
-    } else if (type === "key") {
-      dispatch({
-        type: "SET_KEY",
-        payload: event.target.value,
-      });
-    }
+  componentDidMount() {}
+
+  componentDidUpdate() {
+    alert("update!");
   }
 
-  return (
-    <>
-      <form className={styles.form}>
-        <Routes>
-          <Route
-            path="/:type"
-            element={
-              <>
-                <Header />
-                <h1>Classificator</h1>
-                <Action onData={onData} />
-                <UploadButton uploadData={uploadData} />
-                {result !== "" && <ClassificationResult />}
-                {type === "file" && <FileMeta />}
-              </>
-            }
-          />
-          <Route path="*" element={<Navigate to="/file" />} />
-        </Routes>
-      </form>
-    </>
-  );
+  render() {
+    return (
+      <Layout
+        hasSider={true}
+        style={{
+          height: "100%",
+        }}
+      >
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          onBreakpoint={(broken) => {}}
+          onCollapse={(collapsed, type) => {}}
+        >
+          <div className="logo" />
+          <Menu
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={["1"]}
+            style={{ alignSelf: "center" }}
+          >
+            <Menu.Item key="1" icon={<UserOutlined />}>
+              <Link to="/">Главная</Link>
+            </Menu.Item>
+            <Menu.Item key="2" icon={<InfoOutlined />}>
+              <Link to="/text">Текст</Link>
+            </Menu.Item>
+            <Menu.Item key="3" icon={<FileDoneOutlined />}>
+              <Link to="/file">Файл</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout
+          className="site-layout"
+          style={{
+            background: this.colorBgContainer,
+          }}
+        >
+          <Header
+            style={{
+              paddingLeft: 24,
+              paddingRight: 24,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              // textAlign:"center",
+              background: "#f5f5f5",
+            }}
+          >
+            <span>Classificator</span>
+            <GithubOutlined style={{ alignSelf: "center" }} />
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: "280px",
+              background: "#f5f5f5",
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/text" element={<TextClassificator />} />
+              <Route path="/file" element={<FileClassificator />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </Content>
+        </Layout>
+      </Layout>
+    );
+  }
 }
 
-export default App;
+let mapStateToProps = (state) => {
+  return {
+    text: state.text,
+  };
+};
+
+let mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
