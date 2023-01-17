@@ -142,7 +142,7 @@ def _save(im, fp, filename):
 
         # we ignore the palette here
         im.mode = "P"
-        rawmode = "P;" + str(bpp)
+        rawmode = f"P;{str(bpp)}"
         version = 1
 
     elif im.mode == "1":
@@ -171,7 +171,7 @@ def _save(im, fp, filename):
 
     flags = 0
     if im.mode == "P" and "custom-colormap" in im.info:
-        flags = flags & _FLAGS["custom-colormap"]
+        flags &= _FLAGS["custom-colormap"]
         colormapsize = 4 * 256 + 2
         colormapmode = im.palette.mode
         colormap = im.getdata().getpalette()

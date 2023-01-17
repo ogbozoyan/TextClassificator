@@ -53,9 +53,7 @@ def is_ascii_encoding(encoding: str) -> bool:
 def get_best_encoding(stream: t.IO) -> str:
     """Returns the default stream encoding if not found."""
     rv = getattr(stream, "encoding", None) or sys.getdefaultencoding()
-    if is_ascii_encoding(rv):
-        return "utf-8"
-    return rv
+    return "utf-8" if is_ascii_encoding(rv) else rv
 
 
 class _NonClosingTextIOWrapper(io.TextIOWrapper):
@@ -110,10 +108,7 @@ class _FixupStream:
     def read1(self, size: int) -> bytes:
         f = getattr(self._stream, "read1", None)
 
-        if f is not None:
-            return t.cast(bytes, f(size))
-
-        return self._stream.read(size)
+        return t.cast(bytes, f(size)) if f is not None else self._stream.read(size)
 
     def readable(self) -> bool:
         if self._force_readable:

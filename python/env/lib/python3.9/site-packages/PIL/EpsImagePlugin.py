@@ -40,12 +40,14 @@ gs_windows_binary = None
 if sys.platform.startswith("win"):
     import shutil
 
-    for binary in ("gswin32c", "gswin64c", "gs"):
-        if shutil.which(binary) is not None:
-            gs_windows_binary = binary
-            break
-    else:
-        gs_windows_binary = False
+    gs_windows_binary = next(
+        (
+            binary
+            for binary in ("gswin32c", "gswin64c", "gs")
+            if shutil.which(binary) is not None
+        ),
+        False,
+    )
 
 
 def has_ghostscript():
@@ -252,23 +254,17 @@ class EpsImageFile(ImageFile.ImageFile):
                         except Exception:
                             pass
 
-                else:
-                    m = field.match(s)
-                    if m:
-                        k = m.group(1)
+                elif m := field.match(s):
+                    k = m.group(1)
 
-                        if k == "EndComments":
-                            break
-                        if k[:8] == "PS-Adobe":
-                            self.info[k[:8]] = k[9:]
-                        else:
-                            self.info[k] = ""
-                    elif s[0] == "%":
-                        # handle non-DSC PostScript comments that some
-                        # tools mistakenly put in the Comments section
-                        pass
+                    if k == "EndComments":
+                        break
+                    if k[:8] == "PS-Adobe":
+                        self.info[k[:8]] = k[9:]
                     else:
-                        raise OSError("bad EPS header")
+                        self.info[k] = ""
+                elif s[0] != "%":
+                    raise OSError("bad EPS header")
 
             s_raw = fp.readline()
             s = s_raw.strip("\r\n")

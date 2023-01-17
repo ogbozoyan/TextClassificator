@@ -27,11 +27,11 @@ def _accept(prefix):
     is_valid_vp8_mode = prefix[12:16] in _VP8_MODES_BY_IDENTIFIER
 
     if is_riff_file_format and is_webp_file and is_valid_vp8_mode:
-        if not SUPPORTED:
-            return (
-                "image file could not be identified because WEBP support not installed"
-            )
-        return True
+        return (
+            True
+            if SUPPORTED
+            else "image file could not be identified because WEBP support not installed"
+        )
 
 
 class WebPImageFile(ImageFile.ImageFile):
@@ -94,9 +94,7 @@ class WebPImageFile(ImageFile.ImageFile):
         self._reset(reset=False)
 
     def _getexif(self):
-        if "exif" not in self.info:
-            return None
-        return self.getexif()._get_merged_dict()
+        return None if "exif" not in self.info else self.getexif()._get_merged_dict()
 
     def seek(self, frame):
         if not self._seek_check(frame):
@@ -141,40 +139,32 @@ class WebPImageFile(ImageFile.ImageFile):
             self._get_next()  # Advance to the requested frame
 
     def load(self):
-        if _webp.HAVE_WEBPANIM:
-            if self.__loaded != self.__logical_frame:
-                self._seek(self.__logical_frame)
+        if _webp.HAVE_WEBPANIM and self.__loaded != self.__logical_frame:
+            self._seek(self.__logical_frame)
 
-                # We need to load the image data for this frame
-                data, timestamp, duration = self._get_next()
-                self.info["timestamp"] = timestamp
-                self.info["duration"] = duration
-                self.__loaded = self.__logical_frame
+            # We need to load the image data for this frame
+            data, timestamp, duration = self._get_next()
+            self.info["timestamp"] = timestamp
+            self.info["duration"] = duration
+            self.__loaded = self.__logical_frame
 
-                # Set tile
-                if self.fp and self._exclusive_fp:
-                    self.fp.close()
-                self.fp = BytesIO(data)
-                self.tile = [("raw", (0, 0) + self.size, 0, self.rawmode)]
+            # Set tile
+            if self.fp and self._exclusive_fp:
+                self.fp.close()
+            self.fp = BytesIO(data)
+            self.tile = [("raw", (0, 0) + self.size, 0, self.rawmode)]
 
         return super().load()
 
     def tell(self):
-        if not _webp.HAVE_WEBPANIM:
-            return super().tell()
-
-        return self.__logical_frame
+        return self.__logical_frame if _webp.HAVE_WEBPANIM else super().tell()
 
 
 def _save_all(im, fp, filename):
     encoderinfo = im.encoderinfo.copy()
     append_images = list(encoderinfo.get("append_images", []))
 
-    # If total frame count is 1, then save using the legacy API, which
-    # will preserve non-alpha modes
-    total = 0
-    for ims in [im] + append_images:
-        total += getattr(ims, "n_frames", 1)
+    total = sum(getattr(ims, "n_frames", 1) for ims in [im] + append_images)
     if total == 1:
         _save(im, fp, filename)
         return
@@ -185,10 +175,7 @@ def _save_all(im, fp, filename):
     elif "background" in im.info:
         background = im.info["background"]
         if isinstance(background, int):
-            # GifImagePlugin stores a global color table index in
-            # info["background"]. So it must be converted to an RGBA value
-            palette = im.getpalette()
-            if palette:
+            if palette := im.getpalette():
                 r, g, b = palette[background * 3 : (background + 1) * 3]
                 background = (r, g, b, 255)
             else:

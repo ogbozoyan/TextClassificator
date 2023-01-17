@@ -53,10 +53,11 @@ class MicImageFile(TiffImagePlugin.TiffImageFile):
         # best way to identify MIC files, but what the... ;-)
 
         self.images = []
-        for path in self.ole.listdir():
-            if path[1:] and path[0][-4:] == ".ACI" and path[1] == "Image":
-                self.images.append(path)
-
+        self.images.extend(
+            path
+            for path in self.ole.listdir()
+            if path[1:] and path[0][-4:] == ".ACI" and path[1] == "Image"
+        )
         # if we didn't find any images, this is probably not
         # an MIC file.
         if not self.images:

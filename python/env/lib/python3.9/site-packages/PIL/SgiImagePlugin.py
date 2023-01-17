@@ -123,7 +123,7 @@ class SgiImageFile(ImageFile.ImageFile):
 
 
 def _save(im, fp, filename):
-    if im.mode != "RGB" and im.mode != "RGBA" and im.mode != "L":
+    if im.mode not in ["RGB", "RGBA", "L"]:
         raise ValueError("Unsupported SGI image mode")
 
     # Get the keyword arguments
@@ -146,16 +146,9 @@ def _save(im, fp, filename):
     dim = 3
     # X Dimension = width / Y Dimension = height
     x, y = im.size
-    if im.mode == "L" and y == 1:
-        dim = 1
-    elif im.mode == "L":
-        dim = 2
-    # Z Dimension: Number of channels
-    z = len(im.mode)
-
-    if dim == 1 or dim == 2:
-        z = 1
-
+    if im.mode == "L":
+        dim = 1 if y == 1 else 2
+    z = 1 if dim in {1, 2} else len(im.mode)
     # assert we've got the right number of bands.
     if len(im.getbands()) != z:
         raise ValueError(
@@ -186,10 +179,7 @@ def _save(im, fp, filename):
     fp.write(struct.pack(">l", colormap))
     fp.write(struct.pack("404s", b""))  # dummy
 
-    rawmode = "L"
-    if bpc == 2:
-        rawmode = "L;16B"
-
+    rawmode = "L;16B" if bpc == 2 else "L"
     for channel in im.split():
         fp.write(channel.tobytes("raw", rawmode, 0, orientation))
 

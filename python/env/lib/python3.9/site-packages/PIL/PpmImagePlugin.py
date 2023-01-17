@@ -43,7 +43,7 @@ MODES = {
 
 
 def _accept(prefix):
-    return prefix[0:1] == b"P" and prefix[1] in b"0123456y"
+    return prefix[:1] == b"P" and prefix[1] in b"0123456y"
 
 
 ##
@@ -69,12 +69,10 @@ class PpmImageFile(ImageFile.ImageFile):
         token = b""
         while len(token) <= 10:  # read until next whitespace or limit of 10 characters
             c = self.fp.read(1)
-            if not c:
-                break
-            elif c in b_whitespace:  # token ended
-                if not token:
-                    # skip whitespace at start
-                    continue
+            if c and c in b_whitespace and not token:
+                # skip whitespace at start
+                continue
+            elif c and c in b_whitespace or not c:
                 break
             elif c == b"#":
                 # ignores rest of the line; stops at CR, LF or EOF
@@ -104,9 +102,7 @@ class PpmImageFile(ImageFile.ImageFile):
             self.custom_mimetype = "image/x-portable-pixmap"
 
         maxval = None
-        decoder_name = "raw"
-        if magic_number in (b"P1", b"P2", b"P3"):
-            decoder_name = "ppm_plain"
+        decoder_name = "ppm_plain" if magic_number in (b"P1", b"P2", b"P3") else "raw"
         for ix in range(3):
             token = int(self._read_token())
             if ix == 0:  # token is the x size
@@ -314,13 +310,10 @@ def _save(im, fp, filename):
     else:
         raise OSError(f"cannot write mode {im.mode} as PPM")
     fp.write(head + b"\n%d %d\n" % im.size)
-    if head == b"P6":
+    if head == b"P5" and rawmode == "L" or head != b"P5" and head == b"P6":
         fp.write(b"255\n")
     elif head == b"P5":
-        if rawmode == "L":
-            fp.write(b"255\n")
-        else:
-            fp.write(b"65535\n")
+        fp.write(b"65535\n")
     ImageFile._save(im, fp, [("raw", (0, 0) + im.size, 0, (rawmode, 0, 1))])
 
     # ALTERNATIVE: save via builtin debug function

@@ -69,7 +69,7 @@ class PcfFontFile(FontFile.FontFile):
 
         count = l32(fp.read(4))
         self.toc = {}
-        for i in range(count):
+        for _ in range(count):
             type = l32(fp.read(4))
             self.toc[type] = l32(fp.read(4)), l32(fp.read(4)), l32(fp.read(4))
 
@@ -99,11 +99,7 @@ class PcfFontFile(FontFile.FontFile):
 
         format = l32(fp.read(4))
 
-        if format & 4:
-            i16, i32 = b16, b32
-        else:
-            i16, i32 = l16, l32
-
+        i16, i32 = (b16, b32) if format & 4 else (l16, l32)
         return fp, format, i16, i32
 
     def _load_properties(self):
@@ -117,10 +113,7 @@ class PcfFontFile(FontFile.FontFile):
 
         nprops = i32(fp.read(4))
 
-        # read property description
-        p = []
-        for i in range(nprops):
-            p.append((i32(fp.read(4)), i8(fp.read(1)), i32(fp.read(4))))
+        p = [(i32(fp.read(4)), i8(fp.read(1)), i32(fp.read(4))) for _ in range(nprops)]
         if nprops & 3:
             fp.seek(4 - (nprops & 3), io.SEEK_CUR)  # pad
 
@@ -148,7 +141,7 @@ class PcfFontFile(FontFile.FontFile):
         if (format & 0xFF00) == 0x100:
 
             # "compressed" metrics
-            for i in range(i16(fp.read(2))):
+            for _ in range(i16(fp.read(2))):
                 left = i8(fp.read(1)) - 128
                 right = i8(fp.read(1)) - 128
                 width = i8(fp.read(1)) - 128
@@ -161,7 +154,7 @@ class PcfFontFile(FontFile.FontFile):
         else:
 
             # "jumbo" metrics
-            for i in range(i32(fp.read(4))):
+            for _ in range(i32(fp.read(4))):
                 left = i16(fp.read(2))
                 right = i16(fp.read(2))
                 width = i16(fp.read(2))
@@ -188,14 +181,8 @@ class PcfFontFile(FontFile.FontFile):
         if nbitmaps != len(metrics):
             raise OSError("Wrong number of bitmaps")
 
-        offsets = []
-        for i in range(nbitmaps):
-            offsets.append(i32(fp.read(4)))
-
-        bitmap_sizes = []
-        for i in range(4):
-            bitmap_sizes.append(i32(fp.read(4)))
-
+        offsets = [i32(fp.read(4)) for _ in range(nbitmaps)]
+        bitmap_sizes = [i32(fp.read(4)) for _ in range(4)]
         # byteorder = format & 4  # non-zero => MSB
         bitorder = format & 8  # non-zero => MSB
         padindex = format & 3
@@ -206,10 +193,7 @@ class PcfFontFile(FontFile.FontFile):
         data = fp.read(bitmapsize)
 
         pad = BYTES_PER_ROW[padindex]
-        mode = "1;R"
-        if bitorder:
-            mode = "1"
-
+        mode = "1" if bitorder else "1;R"
         for i in range(nbitmaps):
             x, y, l, r, w, a, d, f = metrics[i]
             b, e = offsets[i], offsets[i + 1]

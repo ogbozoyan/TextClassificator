@@ -65,10 +65,7 @@ def _unpack_args(
 
     def _fetch(c: "te.Deque[V]") -> t.Optional[V]:
         try:
-            if spos is None:
-                return c.popleft()
-            else:
-                return c.pop()
+            return c.popleft() if spos is None else c.pop()
         except IndexError:
             return None
 
@@ -110,9 +107,7 @@ def split_opt(opt: str) -> t.Tuple[str, str]:
     first = opt[:1]
     if first.isalnum():
         return "", opt
-    if opt[1:2] == first:
-        return opt[:2], opt[2:]
-    return first, opt[1:]
+    return (opt[:2], opt[2:]) if opt[1:2] == first else (first, opt[1:])
 
 
 def normalize_opt(opt: str, ctx: t.Optional["Context"]) -> str:
@@ -145,8 +140,7 @@ def split_arg_string(string: str) -> t.List[str]:
     out = []
 
     try:
-        for token in lex:
-            out.append(token)
+        out.extend(iter(lex))
     except ValueError:
         # Raised when end-of-string is reached in an invalid state. Use
         # the partial token as-is. The quote or escape character is in
@@ -223,7 +217,7 @@ class Argument:
     ) -> None:
         if self.nargs > 1:
             assert value is not None
-            holes = sum(1 for x in value if x is None)
+            holes = sum(x is None for x in value)
             if holes == len(value):
                 value = None
             elif holes != 0:

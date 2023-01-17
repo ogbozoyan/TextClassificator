@@ -29,7 +29,7 @@ def register_handler(handler):
 
 
 def _accept(prefix):
-    return prefix[:4] == b"BUFR" or prefix[:4] == b"ZCZC"
+    return prefix[:4] in [b"BUFR", b"ZCZC"]
 
 
 class BufrStubImageFile(ImageFile.StubImageFile):
@@ -50,8 +50,7 @@ class BufrStubImageFile(ImageFile.StubImageFile):
         self.mode = "F"
         self._size = 1, 1
 
-        loader = self._load()
-        if loader:
+        if loader := self._load():
             loader.open(self)
 
     def _load(self):

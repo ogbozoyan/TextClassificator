@@ -141,9 +141,7 @@ class _WindowsConsoleReader(_WindowsConsoleRawIOBase):
         if not rv:
             raise OSError(f"Windows error: {GetLastError()}")
 
-        if buffer[0] == EOF:
-            return 0
-        return 2 * code_units_read.value
+        return 0 if buffer[0] == EOF else 2 * code_units_read.value
 
 
 class _WindowsConsoleWriter(_WindowsConsoleRawIOBase):
@@ -273,7 +271,4 @@ def _get_windows_console_stream(
         if func is not None:
             b = getattr(f, "buffer", None)
 
-            if b is None:
-                return None
-
-            return func(b)
+            return None if b is None else func(b)

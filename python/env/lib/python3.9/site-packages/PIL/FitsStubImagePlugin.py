@@ -58,8 +58,7 @@ class FITSStubImageFile(ImageFile.StubImageFile):
 
         self.fp.seek(offset)
 
-        loader = self._load()
-        if loader:
+        if loader := self._load():
             loader.open(self)
 
     def _load(self):

@@ -30,17 +30,10 @@ EPSILON = 1e-10
 
 def linear(middle, pos):
     if pos <= middle:
-        if middle < EPSILON:
-            return 0.0
-        else:
-            return 0.5 * pos / middle
-    else:
-        pos = pos - middle
-        middle = 1.0 - middle
-        if middle < EPSILON:
-            return 1.0
-        else:
-            return 0.5 + 0.5 * pos / middle
+        return 0.0 if middle < EPSILON else 0.5 * pos / middle
+    pos = pos - middle
+    middle = 1.0 - middle
+    return 1.0 if middle < EPSILON else 0.5 + 0.5 * pos / middle
 
 
 def curved(middle, pos):
@@ -119,22 +112,17 @@ class GimpGradientFile(GradientFile):
 
         gradient = []
 
-        for i in range(count):
-
+        for _ in range(count):
             s = fp.readline().split()
             w = [float(x) for x in s[:11]]
 
             x0, x1 = w[0], w[2]
-            xm = w[1]
-            rgb0 = w[3:7]
-            rgb1 = w[7:11]
-
-            segment = SEGMENTS[int(s[11])]
             cspace = int(s[12])
 
             if cspace != 0:
                 raise OSError("cannot handle HSV colour space")
 
-            gradient.append((x0, x1, xm, rgb0, rgb1, segment))
+            xm = w[1]
+            gradient.append((x0, x1, xm, w[3:7], w[7:11], SEGMENTS[int(s[11])]))
 
         self.gradient = gradient

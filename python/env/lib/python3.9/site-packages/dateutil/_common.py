@@ -11,10 +11,7 @@ class weekday(object):
         self.n = n
 
     def __call__(self, n):
-        if n == self.n:
-            return self
-        else:
-            return self.__class__(self.weekday, n)
+        return self if n == self.n else self.__class__(self.weekday, n)
 
     def __eq__(self, other):
         try:
@@ -35,9 +32,6 @@ class weekday(object):
 
     def __repr__(self):
         s = ("MO", "TU", "WE", "TH", "FR", "SA", "SU")[self.weekday]
-        if not self.n:
-            return s
-        else:
-            return "%s(%+d)" % (s, self.n)
+        return "%s(%+d)" % (s, self.n) if self.n else s
 
 # vim:ts=4:sw=4:et

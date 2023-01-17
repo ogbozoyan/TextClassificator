@@ -131,19 +131,14 @@ class WmfStubImageFile(ImageFile.StubImageFile):
 
             self.info["wmf_bbox"] = x0, y0, x1, y1
 
-            if xdpi == ydpi:
-                self.info["dpi"] = xdpi
-            else:
-                self.info["dpi"] = xdpi, ydpi
-
+            self.info["dpi"] = xdpi if xdpi == ydpi else (xdpi, ydpi)
         else:
             raise SyntaxError("Unsupported file format")
 
         self.mode = "RGB"
         self._size = size
 
-        loader = self._load()
-        if loader:
+        if loader := self._load():
             loader.open(self)
 
     def _load(self):

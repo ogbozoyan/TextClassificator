@@ -73,15 +73,9 @@ class SunImageFile(ImageFile.ImageFile):
         elif depth == 8:
             self.mode = rawmode = "L"
         elif depth == 24:
-            if file_type == 3:
-                self.mode, rawmode = "RGB", "RGB"
-            else:
-                self.mode, rawmode = "RGB", "BGR"
+            self.mode, rawmode = ("RGB", "RGB") if file_type == 3 else ("RGB", "BGR")
         elif depth == 32:
-            if file_type == 3:
-                self.mode, rawmode = "RGB", "RGBX"
-            else:
-                self.mode, rawmode = "RGB", "BGRX"
+            self.mode, rawmode = ("RGB", "RGBX") if file_type == 3 else ("RGB", "BGRX")
         else:
             raise SyntaxError("Unsupported Mode/Bit Depth")
 
@@ -92,7 +86,7 @@ class SunImageFile(ImageFile.ImageFile):
             if palette_type != 1:
                 raise SyntaxError("Unsupported Palette Type")
 
-            offset = offset + palette_length
+            offset += palette_length
             self.palette = ImagePalette.raw("RGB;L", self.fp.read(palette_length))
             if self.mode == "L":
                 self.mode = "P"

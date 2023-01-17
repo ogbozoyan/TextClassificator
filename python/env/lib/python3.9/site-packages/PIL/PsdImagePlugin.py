@@ -82,11 +82,7 @@ class PsdImageFile(ImageFile.ImageFile):
         self.mode = mode
         self._size = i32(s, 18), i32(s, 14)
 
-        #
-        # color mode data
-
-        size = i32(read(4))
-        if size:
+        if size := i32(read(4)):
             data = read(size)
             if mode == "P" and size == 768:
                 self.palette = ImagePalette.raw("RGB;L", data)
@@ -96,8 +92,7 @@ class PsdImageFile(ImageFile.ImageFile):
 
         self.resources = []
 
-        size = i32(read(4))
-        if size:
+        if size := i32(read(4)):
             # load resources
             end = self.fp.tell() + size
             while self.fp.tell() < end:
@@ -118,11 +113,9 @@ class PsdImageFile(ImageFile.ImageFile):
 
         self.layers = []
 
-        size = i32(read(4))
-        if size:
+        if size := i32(read(4)):
             end = self.fp.tell() + size
-            size = i32(read(4))
-            if size:
+            if size := i32(read(4)):
                 _layer_data = io.BytesIO(ImageFile._safe_read(self.fp, size))
                 self.layers = _layerinfo(_layer_data, size)
             self.fp.seek(end)
@@ -190,11 +183,7 @@ def _layerinfo(fp, ct_bytes):
         for _ in types:
             type = i16(read(2))
 
-            if type == 65535:
-                m = "A"
-            else:
-                m = "RGBA"[type]
-
+            m = "A" if type == 65535 else "RGBA"[type]
             mode.append(m)
             read(4)  # size
 
@@ -282,7 +271,7 @@ def _maketile(file, mode, bbox, channels):
             if mode == "CMYK":
                 layer += ";I"
             tile.append(("packbits", bbox, offset, layer))
-            for y in range(ysize):
+            for _ in range(ysize):
                 offset = offset + i16(bytecount, i)
                 i += 2
 

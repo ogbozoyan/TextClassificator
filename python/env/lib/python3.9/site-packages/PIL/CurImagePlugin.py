@@ -47,7 +47,7 @@ class CurImageFile(BmpImagePlugin.BmpImageFile):
 
         # pick the largest cursor in the file
         m = b""
-        for i in range(i16(s, 4)):
+        for _ in range(i16(s, 4)):
             s = self.fp.read(16)
             if not m:
                 m = s

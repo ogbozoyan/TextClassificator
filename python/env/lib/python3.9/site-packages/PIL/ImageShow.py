@@ -58,10 +58,7 @@ def show(image, title=None, **options):
     :param \**options: Additional viewer options.
     :returns: ``True`` if a suitable viewer was found, ``False`` otherwise.
     """
-    for viewer in _viewers:
-        if viewer.show(image, title=title, **options):
-            return True
-    return False
+    return any(viewer.show(image, title=title, **options) for viewer in _viewers)
 
 
 class Viewer:
@@ -120,11 +117,10 @@ class Viewer:
         instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         os.system(self.get_command(path, **options))
         return 1
 
@@ -160,8 +156,7 @@ class MacViewer(Viewer):
         # on darwin open returns immediately resulting in the temp
         # file removal while app is opening
         command = "open -a Preview.app"
-        command = f"({command} {quote(file)}; sleep 20; rm -f {quote(file)})&"
-        return command
+        return f"({command} {quote(file)}; sleep 20; rm -f {quote(file)})&"
 
     def show_file(self, path=None, **options):
         """
@@ -172,14 +167,12 @@ class MacViewer(Viewer):
         instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         subprocess.call(["open", "-a", "Preview.app", path])
-        executable = sys.executable or shutil.which("python3")
-        if executable:
+        if executable := sys.executable or shutil.which("python3"):
             subprocess.Popen(
                 [
                     executable,
@@ -222,11 +215,10 @@ class XDGViewer(UnixViewer):
         instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         subprocess.Popen(["xdg-open", path])
         return 1
 
@@ -251,14 +243,12 @@ class DisplayViewer(UnixViewer):
         and ``path`` should be used instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         args = ["display"]
-        title = options.get("title")
-        if title:
+        if title := options.get("title"):
             args += ["-title", title]
         args.append(path)
 
@@ -282,11 +272,10 @@ class GmDisplayViewer(UnixViewer):
         and ``path`` should be used instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         subprocess.Popen(["gm", "display", path])
         return 1
 
@@ -307,11 +296,10 @@ class EogViewer(UnixViewer):
         and ``path`` should be used instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         subprocess.Popen(["eog", "-n", path])
         return 1
 
@@ -338,14 +326,12 @@ class XVViewer(UnixViewer):
         and ``path`` should be used instead.
         """
         if path is None:
-            if "file" in options:
-                deprecate("The 'file' argument", 10, "'path'")
-                path = options.pop("file")
-            else:
+            if "file" not in options:
                 raise TypeError("Missing required argument: 'path'")
+            deprecate("The 'file' argument", 10, "'path'")
+            path = options.pop("file")
         args = ["xv"]
-        title = options.get("title")
-        if title:
+        if title := options.get("title"):
             args += ["-name", title]
         args.append(path)
 

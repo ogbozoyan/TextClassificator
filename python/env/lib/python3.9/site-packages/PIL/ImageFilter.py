@@ -396,8 +396,7 @@ class Color3DLUT(MultibandFilter):
                 for pixel in raw_table:
                     if len(pixel) != channels:
                         raise ValueError(
-                            "The elements of the table should "
-                            "have a length of {}.".format(channels)
+                            f"The elements of the table should have a length of {channels}."
                         )
                     table.extend(pixel)
 
@@ -522,7 +521,7 @@ class Color3DLUT(MultibandFilter):
         ]
         if self.mode:
             r.append(f"target_mode={self.mode}")
-        return "<{}>".format(" ".join(r))
+        return f'<{" ".join(r)}>'
 
     def filter(self, image):
         from . import Image

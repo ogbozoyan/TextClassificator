@@ -24,8 +24,7 @@ import sys
 
 from PIL import Image, ImageFile, PngImagePlugin, features
 
-enable_jpeg2k = features.check_codec("jpg_2000")
-if enable_jpeg2k:
+if enable_jpeg2k := features.check_codec("jpg_2000"):
     from PIL import Jpeg2KImagePlugin
 
 MAGIC = b"icns"
@@ -73,8 +72,7 @@ def read_32(fobj, start_length, size):
                 if byte & 0x80:
                     blocksize = byte - 125
                     byte = fobj.read(1)
-                    for i in range(blocksize):
-                        data.append(byte)
+                    data.extend(byte for _ in range(blocksize))
                 else:
                     blocksize = byte + 1
                     data.append(fobj.read(blocksize))
@@ -190,10 +188,10 @@ class IcnsFile:
         return sizes
 
     def bestsize(self):
-        sizes = self.itersizes()
-        if not sizes:
+        if sizes := self.itersizes():
+            return max(sizes)
+        else:
             raise SyntaxError("No 32bit icon resources found")
-        return max(sizes)
 
     def dataforsize(self, size):
         """
@@ -205,7 +203,7 @@ class IcnsFile:
         for code, reader in self.SIZES[size]:
             desc = self.dct.get(code)
             if desc is not None:
-                dct.update(reader(self.fobj, desc, size))
+                dct |= reader(self.fobj, desc, size)
         return dct
 
     def getimage(self, size=None):

@@ -164,8 +164,7 @@ class MissingParameter(BadParameter):
 
         msg = self.message
         if self.param is not None:
-            msg_extra = self.param.type.get_missing_message(self.param)
-            if msg_extra:
+            if msg_extra := self.param.type.get_missing_message(self.param):
                 if msg:
                     msg += f". {msg_extra}"
                 else:
@@ -186,11 +185,10 @@ class MissingParameter(BadParameter):
         return f"{missing}{param_hint}.{msg}"
 
     def __str__(self) -> str:
-        if not self.message:
-            param_name = self.param.name if self.param else None
-            return _("Missing parameter: {param_name}").format(param_name=param_name)
-        else:
+        if self.message:
             return self.message
+        param_name = self.param.name if self.param else None
+        return _("Missing parameter: {param_name}").format(param_name=param_name)
 
 
 class NoSuchOption(UsageError):

@@ -97,9 +97,11 @@ class BdfFontFile(FontFile.FontFile):
                 break
             i = s.find(b" ")
             props[s[:i].decode("ascii")] = s[i + 1 : -1].decode("ascii")
-            if s[:i] in [b"COMMENT", b"COPYRIGHT"]:
-                if s.find(b"LogicalFontDescription") < 0:
-                    comments.append(s[i + 1 : -1].decode("ascii"))
+            if (
+                s[:i] in [b"COMMENT", b"COPYRIGHT"]
+                and s.find(b"LogicalFontDescription") < 0
+            ):
+                comments.append(s[i + 1 : -1].decode("ascii"))
 
         while True:
             c = bdf_char(fp)

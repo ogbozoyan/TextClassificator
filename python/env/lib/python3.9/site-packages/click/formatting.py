@@ -124,8 +124,8 @@ class HelpFormatter:
             max_width = 80
         if width is None:
             width = FORCED_WIDTH
-            if width is None:
-                width = max(min(shutil.get_terminal_size().columns, max_width) - 2, 50)
+        if width is None:
+            width = max(min(shutil.get_terminal_size().columns, max_width) - 2, 50)
         self.width = width
         self.current_indent = 0
         self.buffer: t.List[str] = []
@@ -241,9 +241,7 @@ class HelpFormatter:
 
             text_width = max(self.width - first_col - 2, 10)
             wrapped_text = wrap_text(second, text_width, preserve_paragraphs=True)
-            lines = wrapped_text.splitlines()
-
-            if lines:
+            if lines := wrapped_text.splitlines():
                 self.write(f"{lines[0]}\n")
 
                 for line in lines[1:]:

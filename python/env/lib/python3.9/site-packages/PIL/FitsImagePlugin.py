@@ -35,10 +35,11 @@ class FitsImageFile(ImageFile.ImageFile):
             value = header[8:].strip()
             if value.startswith(b"="):
                 value = value[1:].strip()
-            if not headers and (not _accept(keyword) or value != b"T"):
-                raise SyntaxError("Not a FITS file")
-            headers[keyword] = value
+            if headers or not headers and _accept(keyword) and value == b"T":
+                headers[keyword] = value
 
+            else:
+                raise SyntaxError("Not a FITS file")
         naxis = int(headers[b"NAXIS"])
         if naxis == 0:
             raise ValueError("No image data")
@@ -50,12 +51,10 @@ class FitsImageFile(ImageFile.ImageFile):
         number_of_bits = int(headers[b"BITPIX"])
         if number_of_bits == 8:
             self.mode = "L"
-        elif number_of_bits == 16:
+        elif number_of_bits in {16, 32}:
             self.mode = "I"
             # rawmode = "I;16S"
-        elif number_of_bits == 32:
-            self.mode = "I"
-        elif number_of_bits in (-32, -64):
+        elif number_of_bits in {-32, -64}:
             self.mode = "F"
             # rawmode = "F" if number_of_bits == -32 else "F;64F"
 

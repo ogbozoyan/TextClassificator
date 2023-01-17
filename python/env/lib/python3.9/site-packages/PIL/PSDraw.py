@@ -106,10 +106,7 @@ class PSDraw:
         """Draw a PIL image, centered in the given box."""
         # default resolution depends on mode
         if not dpi:
-            if im.mode == "1":
-                dpi = 200  # fax
-            else:
-                dpi = 100  # greyscale
+            dpi = 200 if im.mode == "1" else 100
         # image size (on paper)
         x = im.size[0] * 72 / dpi
         y = im.size[1] * 72 / dpi

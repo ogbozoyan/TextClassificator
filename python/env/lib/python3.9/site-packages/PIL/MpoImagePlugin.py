@@ -65,10 +65,7 @@ def _save_all(im, fp, filename):
     mpentries = b""
     data_offset = 0
     for i, size in enumerate(offsets):
-        if i == 0:
-            mptype = 0x030000  # Baseline MP Primary Image
-        else:
-            mptype = 0x000000  # Undefined
+        mptype = 0x030000 if i == 0 else 0x000000
         mpentries += struct.pack("<LLLHH", mptype, size, data_offset, 0, 0)
         if i == 0:
             data_offset -= 28

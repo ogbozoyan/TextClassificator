@@ -62,10 +62,7 @@ class LutBuilder:
     """
 
     def __init__(self, patterns=None, op_name=None):
-        if patterns is not None:
-            self.patterns = patterns
-        else:
-            self.patterns = []
+        self.patterns = patterns if patterns is not None else []
         self.lut = None
         if op_name is not None:
             known_patterns = {
@@ -81,7 +78,7 @@ class LutBuilder:
                 ],
             }
             if op_name not in known_patterns:
-                raise Exception("Unknown pattern " + op_name + "!")
+                raise Exception(f"Unknown pattern {op_name}!")
 
             self.patterns = known_patterns[op_name]
 
@@ -112,16 +109,17 @@ class LutBuilder:
         # rotations
         if "4" in options:
             res = patterns[-1][1]
-            for i in range(4):
-                patterns.append(
-                    (self._string_permute(patterns[-1][0], ROTATION_MATRIX), res)
-                )
+            patterns.extend(
+                (self._string_permute(patterns[-1][0], ROTATION_MATRIX), res)
+                for _ in range(4)
+            )
         # mirror
         if "M" in options:
             n = len(patterns)
-            for pattern, res in patterns[:n]:
-                patterns.append((self._string_permute(pattern, MIRROR_MATRIX), res))
-
+            patterns.extend(
+                (self._string_permute(pattern, MIRROR_MATRIX), res)
+                for pattern, res in patterns[:n]
+            )
         # negate
         if "N" in options:
             n = len(patterns)
@@ -145,10 +143,10 @@ class LutBuilder:
         for p in self.patterns:
             m = re.search(r"(\w*):?\s*\((.+?)\)\s*->\s*(\d)", p.replace("\n", ""))
             if not m:
-                raise Exception('Syntax error in pattern "' + p + '"')
-            options = m.group(1)
-            pattern = m.group(2)
-            result = int(m.group(3))
+                raise Exception(f'Syntax error in pattern "{p}"')
+            options = m[1]
+            pattern = m[2]
+            result = int(m[3])
 
             # Get rid of spaces
             pattern = pattern.replace(" ", "").replace("\n", "")
